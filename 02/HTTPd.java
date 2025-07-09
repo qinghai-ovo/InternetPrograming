@@ -1,3 +1,9 @@
+
+/*     HTTPd.java
+ * 
+ *     t-matsu  6/12 2015
+ */
+
 import java.io.*;
 import java.net.*;
 
@@ -10,20 +16,18 @@ public class HTTPd {
 		System.out.println("Connect From : "+(socket.getInetAddress()).getHostName());
 		FileInputStream fis = new FileInputStream(file);
 		BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		OutputStream os = socket.getOutputStream();
-		
+		PrintWriter pw = new PrintWriter(socket.getOutputStream());
+		BufferedReader br2 = new BufferedReader(new FileReader(file));
 		while(true){
 		    String str = br.readLine();
 		    System.out.println(str);
 		    if(str.equals(""))break;
 		}
 		
-		byte[] buf = new byte[1024];
-		while(true){
-		    int n = fis.read(buf);
-		    System.out.println("read "+n+" bytes");
-		    if(n==-1)break;
-		    os.write(buf,0,n);
+		String tmp;
+		while((tmp=br2.readLine())!=null){
+		    pw.println(tmp);
+		    pw.flush();
 		}
 		socket.close();
 		fis.close();
