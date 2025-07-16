@@ -1,9 +1,3 @@
-
-/*     HTTPd.java
- * 
- *     t-matsu  6/12 2015
- */
-
 import java.io.*;
 import java.net.*;
 
@@ -23,7 +17,9 @@ public class HTTPd {
 		    System.out.println(str);
 		    if(str.equals(""))break;
 		}
-		
+        //protocal
+		pw.println("HTTP/1.1 200 OK\n");
+        
 		String tmp;
 		while((tmp=br2.readLine())!=null){
 		    pw.println(tmp);
