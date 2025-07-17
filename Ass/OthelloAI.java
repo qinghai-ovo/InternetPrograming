@@ -91,16 +91,76 @@ class OthelloAI{
                 }
             }
         }
-
-        //random ai
-        // //x
-        // xy[0] = (int)(Math.random()*8);
-        // //y
-        // xy[1] = (int)(Math.random()*8);
         return legalPos;
     }
 
-    public static Point getBestPos(Map<Point, Integer> legalPos){
+    public static int[][] getNewBoard(int[][] board, Point put, int my, int op){
+        //copy board
+        int[][] newBoard = new int[8][8];
+        for (int i = 0; i < 8; i++) {
+            System.arraycopy(board[i], 0, newBoard[i], 0, 8);
+        }
+        
+        //put on newBoard
+        int r = put.x;
+        int c = put.y;
+        newBoard[r][c] = my;
+
+        //loop for ever dir
+        for(int[] dir : DIRECTIONS){
+            int dr = dir[0];
+            int dc = dir[1];
+
+            //go next pos
+            int currentR = r + dr;
+            int currentC = c + dc;
+
+            //if in board and is op color 
+            //move on more step
+            boolean foundOp = false;
+            while(isInBounds(currentR, currentC) && board[currentR][currentC] == op){
+                foundOp = true;
+                currentR += dr;
+                currentC += dc;
+            }
+
+            //if meet my color and met op color
+            //inverse them
+            if(foundOp && isInBounds(currentR, currentC) && board[currentR][currentC] == my){
+                int flipR = r + dr;
+                int flipC = c + dc;
+                while(flipR != currentR || flipC != currentC){
+                    newBoard[flipR][flipC] = my;
+                    flipR += dr;
+                    flipC += dc;
+                }
+            }
+        }
+        return newBoard;
+    }
+    public static Point getBestPos(Map<Point, Integer> legalPos,int[][] board, int my){
+        Point bestPos = new Point(0, 0);
+        int op = (-1)*my;
+        int bestScore = Integer.MIN_VALUE;
+
+        for (Map.Entry<Point, Integer> entry : legalPos.entrySet()) {
+            int[][] newBoard = getNewBoard(board, entry.getKey(), my, op);
+
+            Map<Point, Integer> opPoss = getLegalPos(newBoard, op);
+            int opMoveNum = opPoss.size();
+            //System.out.println("("+entry.getKey()+") "+ opMoveNum);
+            int currentScore = weightMatrix[entry.getKey().x][entry.getKey().y] + entry.getValue() - (opMoveNum * 5);
+
+            if( currentScore > bestScore){
+                bestPos = entry.getKey(); 
+                bestScore = currentScore;
+            }
+        }
+        //System.out.println("("+ bestPos + ") " + bestScore);
+        return bestPos;
+    }
+
+    public static Point getBestPosByWight(Map<Point, Integer> legalPos){
         Point bestPos = new Point(0, 0);
         int bestScore = Integer.MIN_VALUE;
 
@@ -163,7 +223,7 @@ class OthelloAI{
                 }else if(serverResponse.equals("TURN " + color)){
                     int mycolor = Integer.parseInt(color);
                     Map<Point, Integer> legalPos = getLegalPos(board, mycolor);
-                    Point putPos =  getBestPos(legalPos);
+                    Point putPos =  getBestPos(legalPos, board, mycolor);
                     pw.println("PUT " + putPos.x + " " + putPos.y);
                     //System.out.println("PW OVER");
                     pw.flush();
