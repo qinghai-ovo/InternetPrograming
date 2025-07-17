@@ -1,16 +1,28 @@
+import java.awt.Point;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 class OthelloAI{
+
+     private static final int[][] DIRECTIONS = {
+        {-1, 0}, {-1, 1}, {0, 1}, {1, 1},
+        {1, 0}, {1, -1}, {0, -1}, {-1, -1}
+    };
     
     public static int[][] getboard(String boardStr){
         int[][] rboard = new int[8][8];
-        StringTokenizer dataStr = new StringTokenizer(boardStr, " ",false);
+        String[] dataStr = boardStr.trim().split("\\s+");
+        
+        if (dataStr.length != 64) {
+            System.err.println("Error: Board string does not contain 64 numbers! Found: " + dataStr.length);
+            return rboard;
+        }
+        int k = 0;
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
-                rboard[i][j] = Integer.parseInt(dataStr.nextToken());
-                
+                rboard[j][i] = Integer.parseInt(dataStr[k]);
+                k++;
                 //debug
                 //System.out.println(".()"+ i +" "+ j + " data " + rboard[i][j]);
             }
@@ -18,83 +30,74 @@ class OthelloAI{
         return  rboard;
     }
 
-    public static int[] putPos(int[][] board, int my){
-        int[] xy = new int[2];
+    private static boolean isInBounds(int r, int c) {
+        return r >= 0 && r < 8 && c >= 0 && c < 8;
+    }
 
-        int score = 0;
-        
-        //check row
-        for(int i = 0; i < 8; i++){
-            //Find the first pos of my
-            for(int j_1 = 0; j_1 < 8; j_1++){
+    public static Map<Point, Integer> getLegalPos(int[][] board, int my){
+        Map<Point, Integer> legalPos = new HashMap<>();
 
-                //if[i][j_1] is the first on this row
-                if(board[i][j_1] == my && j_1 != 7){
-                    int tempScore = 0;
+        int op = (-1) * my;
+        //find legal pos
+        for(int r = 0; r < 8; r++){
+            for(int c = 0; c < 8; c++){
+                if(board[r][c] != 0){
+                    continue;
+                }
+                //socre for this pos
+                int score = 0;
 
-                    //Find the Second on this row from (i, j_1 + 1)
-                    for(int j_2 = j_1 + 1; j_2 < 8 ;j_2 ++){
-                        if(board[i][j_2] == ((-1) * my)){
-                            //record how much between until 0
-                            tempScore++;
-                        }else if(board[i][j_2] == my){  //if meet the second of my
-                            //start from j_2
-                            j_1 = j_2;
-                            break;
-                        }else if(board[i][j_2] == 0){ // if meet 0 at i j_2
-                            //compare and update new score & pos
-                            if (tempScore > score){
-                                score = tempScore;
-                                xy[0] = i;
-                                xy[1] = j_2;
-                            }
-                        }
-                        //if not meet Ok pos then reset tempScore, and find next line
-                        tempScore = 0;
+                //loop for ever dir
+                for(int[] dir : DIRECTIONS){
+                    int dr = dir[0];
+                    int dc = dir[1];
+
+                    //go next pos
+                    int scoreOndir = 0;
+                    int currentR = r + dr;
+                    int currentC = c + dc;
+
+                    //if in board and is op color 
+                    //score on this dir +1 
+                    //move on more step
+                    while(isInBounds(currentR, currentC) && board[currentR][currentC] == op){
+                        scoreOndir++;
+                        currentR += dr;
+                        currentC += dc;
                     }
+
+                    //if meet my color and met op color
+                    //this dir is ok add scoreOn this line to score for this pos
+                    if(scoreOndir > 0 && isInBounds(currentR, currentC) && board[currentR][currentC] == my){
+                        score += scoreOndir;
+                    }
+                }
+
+                //if got score add this pos to legal pos
+                if(score > 0){
+                    legalPos.put(new Point(c, r), score);
                 }
             }
         }
 
-        //check col (inverse the i and j)
-        for(int i = 0; i < 8; i++){
-            //Find the first pos of my
-            for(int j_1 = 0; j_1 < 8; j_1++){
-
-                //if[i][j_1] is the first on this row
-                if(board[j_1][i] == my && j_1 != 7){
-                    int tempScore = 0;
-
-                    //Find the Second on this row from (i, j_1 + 1)
-                    for(int j_2 = j_1 + 1; j_2 < 8 ;j_2 ++){
-                        if(board[j_2][i] == ((-1) * my)){
-                            //record how much between until 0
-                            tempScore++;
-                        }else if(board[j_2][i] == my){  //if meet the second of my
-                            //start from j_2
-                            j_1 = j_2;
-                            break;
-                        }else if(board[j_2][i] == 0){ // if meet 0 at i j_2
-                            //compare and update new score & pos
-                            if (tempScore > score){
-                                score = tempScore;
-                                xy[0] = j_2;
-                                xy[1] = i;
-                            }
-                        }
-                        //if not meet Ok pos then reset tempScore, and find next line
-                        tempScore = 0;
-                    }
-                }
-            }
-        }
-        System.out.println("x" + xy[0] + " y " + xy[1]);
         //random ai
         // //x
         // xy[0] = (int)(Math.random()*8);
         // //y
         // xy[1] = (int)(Math.random()*8);
-        return xy;
+        return legalPos;
+    }
+
+    public static Point getBestPos(Map<Point, Integer> legalPos){
+        Point bestPos = new Point(0, 0);
+        int bestScore = 0;
+        for (Map.Entry<Point, Integer> entry : legalPos.entrySet()) {
+            if(entry.getValue() > bestScore){
+                bestPos = entry.getKey(); 
+                bestScore = entry.getValue();
+            }
+        }
+        return bestPos;
     }
 
     public static void main(String[] args) {
@@ -138,25 +141,25 @@ class OthelloAI{
                 }
 
                 //System.out.println("Server: " + serverResponse);
-
-                if(serverResponse.equals("TURN " + color) || serverResponse.equals("ERROR 2")){
-                    int mycolor = Integer.parseInt(color);
-                    int[] pos = putPos(board, mycolor);
-                    pw.println("PUT " + pos[0] + " " + pos[1]);
-                    //System.out.println("PW OVER");
-                    pw.flush();
-                }else if(serverResponse.equals("ERROR 3")) {
-                    System.out.println("NOT My Turn");
-                }else if(serverResponse.equals("ERROR 4")){
-                    System.out.println("Command Error");
-                }else if(serverResponse.equals("ERROR 1")){
-                    System.out.println("Syntax Error");
-                }else if(serverResponse.startsWith("BOARD ")){
+                if(serverResponse.startsWith("BOARD ")){
                     System.out.println("Reading board");
                     String boardStr = serverResponse.substring("BOARD ".length());
                     board = getboard(boardStr);
                     //debug
-                    //System.out.println(Arrays.deepToString(board));
+                    System.out.println(Arrays.deepToString(board));
+                }else if(serverResponse.equals("TURN " + color)){
+                    int mycolor = Integer.parseInt(color);
+                    Map<Point, Integer> legalPos = getLegalPos(board, mycolor);
+                    Point putPos =  getBestPos(legalPos);
+                    pw.println("PUT " + putPos.x + " " + putPos.y);
+                    //System.out.println("PW OVER");
+                    pw.flush();
+                }else if(serverResponse.equals("ERROR 3")) {
+                    System.out.println("NOT My Turn");
+                }else if(serverResponse.equals("ERROR 4")||serverResponse.equals("ERROR 2")){
+                    System.out.println("Command Error");
+                }else if(serverResponse.equals("ERROR 1")){
+                    System.out.println("Syntax Error");
                 }
             }
         } catch (IOException e) {
