@@ -1,3 +1,2 @@
 *.class
-
-!/Ass/testAI/
+!/Ass/testset/*.class
