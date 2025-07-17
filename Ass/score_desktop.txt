@@ -4,10 +4,14 @@ MonteAI_508,1,0
 RandomAI_451,0,1
 MonteAI_626,1,0
 RandomAI_375,0,1
+RandomAI_134,0,1
 MonteAI_371,1,0
+MonteAI_490,1,0
 RandomAI_807,0,1
+MonteAI_771,0,1
 MonteAI_598,1,0
 RandomAI_649,0,1
+RandomAI_658,0,1
 MonteAI_55,1,0
-6323041,7,5
+6323041,10,6
 RandomAI_357,0,1
