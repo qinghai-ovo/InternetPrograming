@@ -1,1 +1,10 @@
-6323041,2,2
+RandomAI_122,0,1
+MonteAI_989,1,0
+RandomAI_341,0,1
+MonteAI_814,1,0
+RandomAI_617,0,1
+RandomAI_18,0,1
+MonteAI_652,1,0
+MonteAI_636,1,0
+MonteAI_875,1,0
+6323041,3,4

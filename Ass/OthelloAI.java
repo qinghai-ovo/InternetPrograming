@@ -5,9 +5,21 @@ import java.util.*;
 
 class OthelloAI{
 
+    private static final int[][] weightMatrix = {
+    {120, -20,  20,   5,   5,  20, -20, 120}, 
+    {-20, -40,  -5,  -5,  -5,  -5, -40, -20}, 
+    { 20,  -5,  15,   3,   3,  15,  -5,  20},
+    {  5,  -5,   3,   3,   3,   3,  -5,   5},
+    {  5,  -5,   3,   3,   3,   3,  -5,   5},
+    { 20,  -5,  15,   3,   3,  15,  -5,  20},
+    {-20, -40,  -5,  -5,  -5,  -5, -40, -20},
+    {120, -20,  20,   5,   5,  20, -20, 120}
+    };
+
      private static final int[][] DIRECTIONS = {
-        {-1, 0}, {-1, 1}, {0, 1}, {1, 1},
-        {1, 0}, {1, -1}, {0, -1}, {-1, -1}
+        {-1, 0}, {-1, 1},{-1, -1},
+        {0, 1}, {0, -1},
+        {1, 1},{1, 0}, {1, -1}
     };
     
     public static int[][] getboard(String boardStr){
@@ -90,13 +102,16 @@ class OthelloAI{
 
     public static Point getBestPos(Map<Point, Integer> legalPos){
         Point bestPos = new Point(0, 0);
-        int bestScore = 0;
+        int bestScore = Integer.MIN_VALUE;
+
         for (Map.Entry<Point, Integer> entry : legalPos.entrySet()) {
-            if(entry.getValue() > bestScore){
+            int currentScore = weightMatrix[entry.getKey().x][entry.getKey().y] + entry.getValue();
+            if( currentScore > bestScore){
                 bestPos = entry.getKey(); 
-                bestScore = entry.getValue();
+                bestScore = currentScore;
             }
         }
+        //System.out.println("("+ bestPos + ") " + bestScore);
         return bestPos;
     }
 
@@ -120,8 +135,6 @@ class OthelloAI{
             pw = new PrintWriter(new OutputStreamWriter(sOut),true);
             //stdIn = new BufferedReader(new InputStreamReader(System.in));
 
-            System.out.println("Connected to server. Enter text to send.");
-            System.out.println("Type 'exit' to quit.");
             pw.println("NICK 6323041");
                         
             String serverResponse = br.readLine();
@@ -142,11 +155,11 @@ class OthelloAI{
 
                 //System.out.println("Server: " + serverResponse);
                 if(serverResponse.startsWith("BOARD ")){
-                    System.out.println("Reading board");
+                    //System.out.println("Reading board");
                     String boardStr = serverResponse.substring("BOARD ".length());
                     board = getboard(boardStr);
                     //debug
-                    System.out.println(Arrays.deepToString(board));
+                    //System.out.println(Arrays.deepToString(board));
                 }else if(serverResponse.equals("TURN " + color)){
                     int mycolor = Integer.parseInt(color);
                     Map<Point, Integer> legalPos = getLegalPos(board, mycolor);
@@ -160,6 +173,8 @@ class OthelloAI{
                     System.out.println("Command Error");
                 }else if(serverResponse.equals("ERROR 1")){
                     System.out.println("Syntax Error");
+                }else if(serverResponse.startsWith("END")){
+                    System.out.println(serverResponse);
                 }
             }
         } catch (IOException e) {
