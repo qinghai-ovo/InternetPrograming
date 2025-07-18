@@ -94,13 +94,16 @@ class OthelloAI{
         return legalPos;
     }
 
-    public static int[][] getNewBoard(int[][] board, Point put, int my, int op){
+    public static int[][] copyBoard(int[][] board){
         //copy board
         int[][] newBoard = new int[8][8];
         for (int i = 0; i < 8; i++) {
             System.arraycopy(board[i], 0, newBoard[i], 0, 8);
         }
-        
+        return newBoard;    
+    }
+    
+    public static void simBoard(int[][] newBoard, Point put, int my, int op){
         //put on newBoard
         int r = put.x;
         int c = put.y;
@@ -118,7 +121,7 @@ class OthelloAI{
             //if in board and is op color 
             //move on more step
             boolean foundOp = false;
-            while(isInBounds(currentR, currentC) && board[currentR][currentC] == op){
+            while(isInBounds(currentR, currentC) && newBoard[currentR][currentC] == op){
                 foundOp = true;
                 currentR += dr;
                 currentC += dc;
@@ -126,7 +129,7 @@ class OthelloAI{
 
             //if meet my color and met op color
             //inverse them
-            if(foundOp && isInBounds(currentR, currentC) && board[currentR][currentC] == my){
+            if(foundOp && isInBounds(currentR, currentC) && newBoard[currentR][currentC] == my){
                 int flipR = r + dr;
                 int flipC = c + dc;
                 while(flipR != currentR || flipC != currentC){
@@ -136,15 +139,17 @@ class OthelloAI{
                 }
             }
         }
-        return newBoard;
     }
+
     public static Point getBestPos(Map<Point, Integer> legalPos,int[][] board, int my){
         Point bestPos = new Point(0, 0);
         int op = (-1)*my;
         int bestScore = Integer.MIN_VALUE;
 
         for (Map.Entry<Point, Integer> entry : legalPos.entrySet()) {
-            int[][] newBoard = getNewBoard(board, entry.getKey(), my, op);
+            int[][] newBoard = copyBoard(board);
+
+            simBoard(newBoard, entry.getKey(), my, op);
 
             Map<Point, Integer> opPoss = getLegalPos(newBoard, op);
             int opMoveNum = opPoss.size();
