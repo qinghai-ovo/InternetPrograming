@@ -220,14 +220,14 @@ class OthelloAI{
 
                 //System.out.println("Server: " + serverResponse);
                 if(serverResponse.startsWith("BOARD ")){
-                    //System.out.println("Reading board");
+                    System.out.println("===New board===");
                     String boardStr = serverResponse.substring("BOARD ".length());
                     board = getboard(boardStr);
                     //debug
                     for (int[] row : board) {
                         // 内层循环获取当前行的每一个元素 (element)
                         for (int ele : row) {
-                            System.out.print(ele + "\t");
+                            System.out.print(ele + " ");
                         }
                         System.out.println();
                     }
