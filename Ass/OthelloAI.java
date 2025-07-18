@@ -224,7 +224,7 @@ class OthelloAI{
                     String boardStr = serverResponse.substring("BOARD ".length());
                     board = getboard(boardStr);
                     //debug
-                    //System.out.println(Arrays.deepToString(board));
+                    System.out.println(Arrays.deepToString(board));
                 }else if(serverResponse.equals("TURN " + color)){
                     int mycolor = Integer.parseInt(color);
                     Map<Point, Integer> legalPos = getLegalPos(board, mycolor);
