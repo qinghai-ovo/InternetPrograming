@@ -192,7 +192,7 @@ class OthelloAI{
         int[][] board = new int[8][8];
 
         try {
-            s = new Socket(args[0], 25033);
+            s = new Socket(args[0], Integer.parseInt(args[1]));
 
             sIn = s.getInputStream();
             sOut = s.getOutputStream();
