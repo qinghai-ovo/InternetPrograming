@@ -3,17 +3,17 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-class OthelloAI{
-
+class OthelloAI_v21{
+    
     private static final int[][] weightMatrix = {
-        {120, -20,  20,   5,   5,  20, -20, 120}, 
-        {-20, -40,  -5,  -5,  -5,  -5, -40, -20}, 
-        { 20,  -5,  15,   3,   3,  15,  -5,  20},
-        {  5,  -5,   3,   3,   3,   3,  -5,   5},
-        {  5,  -5,   3,   3,   3,   3,  -5,   5},
-        { 20,  -5,  15,   3,   3,  15,  -5,  20},
-        {-20, -40,  -5,  -5,  -5,  -5, -40, -20},
-        {120, -20,  20,   5,   5,  20, -20, 120}
+    {120, -20,  20,   5,   5,  20, -20, 120}, 
+    {-20, -40,  -5,  -5,  -5,  -5, -40, -20}, 
+    { 20,  -5,  15,   3,   3,  15,  -5,  20},
+    {  5,  -5,   3,   3,   3,   3,  -5,   5},
+    {  5,  -5,   3,   3,   3,   3,  -5,   5},
+    { 20,  -5,  15,   3,   3,  15,  -5,  20},
+    {-20, -40,  -5,  -5,  -5,  -5, -40, -20},
+    {120, -20,  20,   5,   5,  20, -20, 120}
     };
 
      private static final int[][] DIRECTIONS = {
@@ -195,7 +195,7 @@ class OthelloAI{
             pw = new PrintWriter(new OutputStreamWriter(sOut),true);
             //stdIn = new BufferedReader(new InputStreamReader(System.in));
 
-            pw.println("NICK 6323041");
+            pw.println("NICK 6323041_v21");
                         
             String serverResponse = br.readLine();
 
