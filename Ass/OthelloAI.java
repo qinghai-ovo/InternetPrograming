@@ -224,7 +224,13 @@ class OthelloAI{
                     String boardStr = serverResponse.substring("BOARD ".length());
                     board = getboard(boardStr);
                     //debug
-                    System.out.println(Arrays.deepToString(board));
+                    for (int[] row : board) {
+                        // 内层循环获取当前行的每一个元素 (element)
+                        for (int ele : row) {
+                            System.out.print(ele + "\t");
+                        }
+                        System.out.println();
+                    }
                 }else if(serverResponse.equals("TURN " + color)){
                     int mycolor = Integer.parseInt(color);
                     Map<Point, Integer> legalPos = getLegalPos(board, mycolor);
